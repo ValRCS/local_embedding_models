@@ -1,51 +1,111 @@
-# local_embedding_models
-Research and Prototypes of local embeddings
+# Local Multilingual Embedding Models (March 2026)
 
-## Multilingual Embedding Models -- Local Comparison (March 2026)
+Reference comparison for locally runnable embedding models on:
 
-Hardware assumptions: - 32GB RAM - RTX 5070-class GPU with 16GB VRAM -
-FP16 inference - Proper batching - Dense embedding output only
+-   32GB RAM
+-   RTX 5070-class GPU (16GB VRAM)
+-   FP16 inference
+-   Proper batching
+-   Dense embedding output
 
-Throughput values are realistic sustained production estimates for
-256-token and 4096-token chunks.
+Throughput estimates are realistic sustained production estimates.
 
-  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Model                   Canonical Link                                                   Org         Country         License     Lang Coverage  Max Context      Native Dim       Output Types   Primary            Docs/min (256)   Docs/min
-                                                                                                                                                                                                   Optimization                        (4096)
-  ----------------------- ---------------------------------------------------------------- ----------- --------------- ----------- -------------- ---------------- ---------------- -------------- ------------------ ---------------- ----------
-  Qwen3-Embedding 0.6B    https://huggingface.co/Qwen/Qwen3-Embedding-0.6B                 Qwen        China           Apache 2.0  100+ (explicit 32K              1024 (MRL        Dense          Retrieval +        7,000--10,000    10--35
-                                                                                           (Alibaba)                               LV)                             adjustable)                     similarity                          
+------------------------------------------------------------------------
 
-  Qwen3-Embedding 4B      https://huggingface.co/Qwen/Qwen3-Embedding-4B                   Qwen        China           Apache 2.0  100+ (explicit 32K              2560 (MRL        Dense          Retrieval-strong   1,800--3,000     3--12
-                                                                                           (Alibaba)                               LV)                             adjustable)                                                         
+## 🧠 Long-Context Embedding Models (8K--32K)
 
-  Qwen3-Embedding 8B      https://huggingface.co/Qwen/Qwen3-Embedding-8B                   Qwen        China           Apache 2.0  100+ (explicit 32K              4096 (MRL        Dense          Retrieval-heavy    700--1,200       1--4
-                                                                                           (Alibaba)                               LV)                             adjustable)                                                         
+Best suited for:
 
-  jina-embeddings-v4      https://huggingface.co/jinaai/jina-embeddings-v4                 Jina AI     Germany         Qwen        30+ (LV        32K              Variable (MRL)   Dense +        Retrieval + doc    3,500--6,000     8--25
-                                                                                                                       Research    included)                                        multi-vector   matching                            
-                                                                                                                       License                                                                                                         
+-   Large document chunks
+-   Chapter-level embeddings
+-   Retrieval over long documents
 
-  jina-embeddings-v3      https://huggingface.co/jinaai/jina-embeddings-v3                 Jina AI     Germany         Apache 2.0  30+ (LV        8192             1024             Dense          General            6,000--9,500     10--40
-                                                                                                                                   supported)                                                      embedding +                         
-                                                                                                                                                                                                   retrieval                           
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Model                       Country   License    Max       Native Dim       Optimization       Docs/min (256)  Docs/min   Canonical Link
+                                                   Context                                                       (4096)     
+  --------------------------- --------- ---------- --------- ---------------- ------------------ --------------- ---------- ----------------------------------------------------------------
+  **Qwen3-Embedding 0.6B**    China     Apache 2.0 32K       1024 (MRL)       Retrieval +        7,000--10,000   10--35     https://huggingface.co/Qwen/Qwen3-Embedding-0.6B
+                                                                              similarity                                    
 
-  BGE-M3                  https://huggingface.co/BAAI/bge-m3                               BAAI        China           MIT         100+           8192             1024             Dense +        Hybrid retrieval   9,000--13,000    20--60
-                                                                                                                                                                                    sparse +                                           
-                                                                                                                                                                                    multi-vector                                       
+  **Qwen3-Embedding 4B**      China     Apache 2.0 32K       2560 (MRL)       Retrieval-strong   1,800--3,000    3--12      https://huggingface.co/Qwen/Qwen3-Embedding-4B
 
-  GTE-multilingual-base   https://huggingface.co/Alibaba-NLP/gte-multilingual-base         Alibaba NLP China           Apache 2.0  70+            8192             768              Dense + sparse Retrieval          9,500--14,000    20--70
+  **Qwen3-Embedding 8B**      China     Apache 2.0 32K       4096 (MRL)       Retrieval-heavy    700--1,200      1--4       https://huggingface.co/Qwen/Qwen3-Embedding-8B
 
-  Snowflake               https://huggingface.co/Snowflake/snowflake-arctic-embed-l-v2.0   Snowflake   USA             Apache 2.0  Multilingual   8192             1024             Dense (MRL)    Retrieval          7,000--10,000    15--50
-  Arctic-Embed-L-v2.0                                                                                                                                              (compressible)                                                      
+  **jina-embeddings-v4**      Germany   Qwen       32K       Variable (MRL)   Retrieval + doc    3,500--6,000    8--25      https://huggingface.co/jinaai/jina-embeddings-v4
+                                        Research                              matching                                      
+                                        License                                                                             
 
-  multilingual-e5-large   https://huggingface.co/intfloat/multilingual-e5-large            intfloat    International   MIT         100            512              1024             Dense          Similarity +       12,000--18,000   N/A
-                                                                                                                                                                                                   retrieval                           
+  **jina-embeddings-v3**      Germany   Apache 2.0 8192      1024             General +          6,000--9,500    10--40     https://huggingface.co/jinaai/jina-embeddings-v3
+                                                                              retrieval                                     
 
-  LaBSE                   https://huggingface.co/sentence-transformers/LaBSE               Google      USA             Apache 2.0  109+           \~256--512       768              Dense          Sentence           15,000--21,000   N/A
-                                                                                           Research                                                                                                similarity                          
+  **BGE-M3**                  China     MIT        8192      1024             Hybrid (dense +    9,000--13,000   20--60     https://huggingface.co/BAAI/bge-m3
+                                                                              sparse)                                       
 
-  LASER encoders          https://github.com/facebookresearch/LASER                        Meta AI     USA             BSD-style   200+           Sentence-level   1024             Dense          Cross-lingual      18,000--24,000   N/A
-                                                                                                                                                                                                   similarity                          
-  -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  **GTE-multilingual-base**   China     Apache 2.0 8192      768              Retrieval          9,500--14,000   20--70     https://huggingface.co/Alibaba-NLP/gte-multilingual-base
 
+  **Snowflake                 USA       Apache 2.0 8192      1024             Retrieval          7,000--10,000   15--50     https://huggingface.co/Snowflake/snowflake-arctic-embed-l-v2.0
+  Arctic-Embed-L-v2.0**                                      (compressible)                                                 
+  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## ⚡ High-Speed Multilingual Models (Shorter Context)
+
+Best suited for:
+
+-   Sentence-level similarity
+-   Clustering
+-   Concept geometry
+-   Query embeddings
+
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Model                       Country         License     Max Context      Native   Optimization    Docs/min (256)   Canonical Link
+                                                                           Dim                                       
+  --------------------------- --------------- ----------- ---------------- -------- --------------- ---------------- -------------------------------------------------------
+  **multilingual-e5-large**   International   MIT         512              1024     Similarity +    12,000--18,000   https://huggingface.co/intfloat/multilingual-e5-large
+                                                                                    retrieval                        
+
+  **LaBSE**                   USA             Apache 2.0  \~256--512       768      Sentence        15,000--21,000   https://huggingface.co/sentence-transformers/LaBSE
+                                                                                    similarity                       
+
+  **LASER encoders**          USA             BSD-style   Sentence-level   1024     Cross-lingual   18,000--24,000   https://github.com/facebookresearch/LASER
+                                                                                    similarity                       
+  --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+## 🌍 Language Coverage
+
+All listed models:
+
+-   Claim 70+ languages or are based on multilingual backbones
+-   Suitable for Latvian, English, Russian, German
+-   Runnable locally on mid-tier hardware
+
+Some (Qwen3) explicitly list Latvian.
+
+------------------------------------------------------------------------
+
+## 🧩 Choosing by Use Case
+
+### Retrieval over large documents
+
+-   BGE-M3
+-   Qwen3-Embedding (0.6B / 4B)
+-   GTE-multilingual-base
+
+### Clustering / Concept Graphs / PCA
+
+-   multilingual-e5-large
+-   BGE-M3
+-   LaBSE
+
+### Chapter-Level Embeddings
+
+-   Qwen3-Embedding 0.6B
+-   jina-embeddings-v4
+
+------------------------------------------------------------------------
+
+This repository is intended for empirical benchmarking and
+experimentation across multilingual embedding spaces.
