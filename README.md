@@ -75,6 +75,57 @@ Some (Qwen3) explicitly list Latvian.
 - Qwen3-Embedding 0.6B
 - jina-embeddings-v4
 
+## CPU-Only Embedding Performance (Xeon E3-1245 v3, 32GB DDR3, SATA SSD)
+
+Assumptions:
+
+- Intel Xeon E3-1245 v3 (Haswell, 4 cores / 8 threads, AVX2 support)
+- 32GB DDR3 RAM
+- SATA SSD
+- CPU-only inference (no GPU)
+- 256-token chunks
+- Dense embeddings
+- Proper batching (critical on CPU)
+
+Performance depends heavily on:
+
+- Model size
+- Backend (PyTorch vs ONNX Runtime)
+- Quantization (fp32 vs int8)
+- Batch size
+- Thread configuration
+
+Below are realistic sustained throughput estimates in **chunks per minute**.
+
+| Model Class (Examples) | Approx Model Size | Backend | Estimated Chunks / Minute (CPU-only) |
+| --- | --- | --- | --- |
+| LASER encoders | Smaller / lightweight | Native CPU / optimized | 300–1,000+ |
+| LaBSE | ~400–500M | PyTorch CPU | 40–120 |
+| multilingual-e5-large | ~560M | PyTorch CPU | 20–80 |
+| GTE-multilingual-base | ~600M | PyTorch CPU | 20–80 |
+| BGE-M3 | ~600M | PyTorch CPU | 20–80 |
+| Encoder models (int8 via ONNX Runtime) | Same as above | ONNX Runtime int8 | 40–150 |
+| Qwen3-Embedding 4B / 8B | Multi-GB | CPU-only | Not practical (often single digits/min) |
+
+---
+
+### Wall-Clock Interpretation
+
+- 100 chunks/min ≈ 6,000 chunks/hour  
+- 50 chunks/min ≈ 3,000 chunks/hour  
+- 25 chunks/min ≈ 1,500 chunks/hour  
+
+Embedding a large corpus on this CPU is feasible, but measured in **hours or days**, not minutes.
+
+---
+
+### Practical Recommendations for Xeon-Class Hardware
+
+1. Prefer encoder models (e5 / GTE / BGE-M3 / LaBSE) over multi-billion parameter embedding LLMs.  
+2. Use batching aggressively (e.g., 16–64) and benchmark.  
+3. Use ONNX Runtime int8 where supported for potential ~2× speedup.  
+4. Keep chunk size at 256–512 tokens. Longer chunks will significantly reduce throughput.  
+
 ---
 
 This repository is intended for empirical benchmarking and experimentation across multilingual embedding spaces.
